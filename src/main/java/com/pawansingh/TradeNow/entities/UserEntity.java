@@ -6,8 +6,6 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @Entity
 @Data
@@ -21,8 +19,9 @@ public class UserEntity {
 //    @NonNull
     public String fullName;
     public String email;
+    public String mobile;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) // we can only write it, can't read it
     public String password;
 
     // setting role to customer by default
