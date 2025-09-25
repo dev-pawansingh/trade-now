@@ -1,10 +1,14 @@
 package com.pawansingh.TradeNow.controllers;
 
 import com.pawansingh.TradeNow.config.JwtProvider;
+import com.pawansingh.TradeNow.entities.TwoFactorOTP;
 import com.pawansingh.TradeNow.entities.UserEntity;
 import com.pawansingh.TradeNow.repositories.UserRepository;
 import com.pawansingh.TradeNow.response.AuthResponse;
 import com.pawansingh.TradeNow.services.CustomUserDetailsService;
+import com.pawansingh.TradeNow.services.EmailService;
+import com.pawansingh.TradeNow.services.TwoFactorOTPService;
+import com.pawansingh.TradeNow.utils.OTPUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,10 +18,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Slf4j
@@ -29,6 +30,12 @@ public class AuthController {
 
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
+
+    @Autowired
+    private TwoFactorOTPService twoFactorOTPService;
+
+    @Autowired
+    private EmailService emailService;
 
     @PostMapping("/signup")
     public ResponseEntity<AuthResponse> register(@RequestBody UserEntity user) throws Exception{
@@ -54,6 +61,11 @@ public class AuthController {
 
                 SecurityContextHolder.getContext().setAuthentication(auth);
                 String jwt = JwtProvider.generateToken(auth);
+
+//                if(user.getTwoFactorAuth().isEnabled()){
+//
+//                }
+
                 AuthResponse res = new AuthResponse();
                 res.setJwt(jwt);
                 res.setStatus(true);
@@ -72,6 +84,26 @@ public class AuthController {
 
         SecurityContextHolder.getContext().setAuthentication(auth);
         String jwt = JwtProvider.generateToken(auth);
+        UserEntity authUser = userRepository.findUserByEmail(userName);
+
+        if(user.getTwoFactorAuth().isEnabled()){
+            AuthResponse res = new AuthResponse();
+            res.setMessage("Two Factor Authentication is Enabled");
+            res.setTwoFactorAuthEnabled(true);
+            String otp = OTPUtils.generateOTP();
+
+            TwoFactorOTP oldTwoFactorOTP = twoFactorOTPService.findByUser(authUser.getId());
+            if(oldTwoFactorOTP != null){
+                twoFactorOTPService.deleteTwoFactorOTP(oldTwoFactorOTP);
+            }
+            TwoFactorOTP newTwoFactorOTP = twoFactorOTPService.createTwoFactorOTP(authUser,otp,jwt);
+
+            emailService.sendVerificationOTPEmail(userName,otp);
+
+            res.setSession(newTwoFactorOTP.getId());
+            return new ResponseEntity<>(res,HttpStatus.ACCEPTED);
+
+        }
         AuthResponse res = new AuthResponse();
         res.setJwt(jwt);
         res.setStatus(true);
@@ -89,6 +121,19 @@ public class AuthController {
         }else{
             return new UsernamePasswordAuthenticationToken(userDetails,password,userDetails.getAuthorities());
         }
+    }
+
+    public ResponseEntity<AuthResponse> verifySigningOtp(
+            @PathVariable String otp, @RequestParam String id) throws Exception {
+        TwoFactorOTP twoFactorOTP = twoFactorOTPService.findById(id);
+        if(twoFactorOTPService.verifyTwoFactorOTP(twoFactorOTP, otp)){
+            AuthResponse res = new AuthResponse();
+            res.setMessage("Two Factor Authentication Verified");
+            res.setTwoFactorAuthEnabled(true);
+            res.setJwt(twoFactorOTP.getJwt());
+            return new ResponseEntity<>(res,HttpStatus.OK);
+        }
+        throw new Exception("Invalid OTP");
     }
 
 }
