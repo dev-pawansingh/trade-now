@@ -1,4 +1,4 @@
-package com.pawansingh.TradeNow.entities;
+package com.pawansingh.TradeNow.model;
 
 import com.pawansingh.TradeNow.domain.VerificationType;
 import lombok.Data;

@@ -1,8 +1,8 @@
 package com.pawansingh.TradeNow.services;
 
 import com.pawansingh.TradeNow.domain.VerificationType;
-import com.pawansingh.TradeNow.entities.UserEntity;
-import com.pawansingh.TradeNow.entities.VerificationCode;
+import com.pawansingh.TradeNow.model.User;
+import com.pawansingh.TradeNow.model.VerificationCode;
 import com.pawansingh.TradeNow.repositories.VerificationCodeRepository;
 import com.pawansingh.TradeNow.utils.OTPUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ public class VerificationCodeServiceImpl implements VerificationCodeService {
     private VerificationCodeRepository verificationCodeRepository;
 
     @Override
-    public VerificationCode sendVerificationCode(UserEntity user, VerificationType verificationType) {
+    public VerificationCode sendVerificationCode(User user, VerificationType verificationType) {
         VerificationCode verificationCode1 = new VerificationCode();
         verificationCode1.setOtp(OTPUtils.generateOTP());
         verificationCode1.setVerificationType(verificationType);

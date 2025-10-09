@@ -1,8 +1,8 @@
 package com.pawansingh.TradeNow.services;
 
 import com.pawansingh.TradeNow.domain.VerificationType;
-import com.pawansingh.TradeNow.entities.ForgotPasswordToken;
-import com.pawansingh.TradeNow.entities.UserEntity;
+import com.pawansingh.TradeNow.model.ForgotPasswordToken;
+import com.pawansingh.TradeNow.model.User;
 import com.pawansingh.TradeNow.repositories.ForgotPasswordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ public class ForgotPasswordImpl implements ForgotPasswordService{
     private ForgotPasswordRepository forgotPasswordRepository;
 
     @Override
-    public ForgotPasswordToken createToken(UserEntity user, String id, String otp, VerificationType verificationType, String sendTo) {
+    public ForgotPasswordToken createToken(User user, String id, String otp, VerificationType verificationType, String sendTo) {
         ForgotPasswordToken token = new ForgotPasswordToken();
         token.setUser(user);
         token.setSendTo(sendTo);

@@ -1,10 +1,10 @@
 package com.pawansingh.TradeNow.repositories;
 
-import com.pawansingh.TradeNow.entities.UserEntity;
+import com.pawansingh.TradeNow.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserRepository extends JpaRepository<UserEntity, Long> {
+public interface UserRepository extends JpaRepository<User, Long> {
 
-    UserEntity findUserByEmail(String email);
+    User findUserByEmail(String email);
 
 }

@@ -1,7 +1,7 @@
 package com.pawansingh.TradeNow.services;
 
-import com.pawansingh.TradeNow.entities.TwoFactorOTP;
-import com.pawansingh.TradeNow.entities.UserEntity;
+import com.pawansingh.TradeNow.model.TwoFactorOTP;
+import com.pawansingh.TradeNow.model.User;
 import com.pawansingh.TradeNow.repositories.TwoFactorOTPRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,7 @@ public class TwoFactorOTPServiceImpl implements TwoFactorOTPService{
     private TwoFactorOTPRepo twoFactorOTPRepo;
 
     @Override
-    public TwoFactorOTP createTwoFactorOTP(UserEntity user, String otp, String jwt) {
+    public TwoFactorOTP createTwoFactorOTP(User user, String otp, String jwt) {
         UUID uuid = UUID.randomUUID();
         String id = uuid.toString();
         TwoFactorOTP twoFactorOTP = new TwoFactorOTP();

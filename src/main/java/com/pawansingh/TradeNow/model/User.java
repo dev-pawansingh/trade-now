@@ -1,4 +1,4 @@
-package com.pawansingh.TradeNow.entities;
+package com.pawansingh.TradeNow.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pawansingh.TradeNow.domain.USER_ROLE;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserEntity {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

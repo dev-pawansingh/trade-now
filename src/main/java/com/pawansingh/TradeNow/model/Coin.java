@@ -1,16 +1,18 @@
-package com.pawansingh.TradeNow.entities;
+package com.pawansingh.TradeNow.model;
 
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import java.util.Date;
 
-
-@Data
 @Entity
-//@Table(name = "crypto")
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
+@Table(name = "coins")
 public class Coin {
 
     @Id
@@ -60,13 +62,13 @@ public class Coin {
     private double marketCapChangePercentage24h;
 
     @JsonProperty("circulating_supply")
-    private double circulatingSupply;
+    private long circulatingSupply;
 
     @JsonProperty("total_supply")
-    private double totalSupply;
+    private long totalSupply;
 
     @JsonProperty("max_supply")
-    private double maxSupply;
+    private long maxSupply;
 
     @JsonProperty("ath")
     private double ath;
@@ -75,7 +77,7 @@ public class Coin {
     private double athChangePercentage;
 
     @JsonProperty("ath_date")
-    private String athDate;
+    private Date athDate;
 
     @JsonProperty("atl")
     private double atl;
@@ -84,12 +86,12 @@ public class Coin {
     private double atlChangePercentage;
 
     @JsonProperty("atl_date")
-    private String atlDate;
+    private Date atlDate;
 
     @JsonProperty("roi")
-    private String roi; // if ROI is a complex object, we can create a nested class
+    @JsonIgnore
+    private String roi;
 
     @JsonProperty("last_updated")
-    private String lastUpdated;
+    private Date lastUpdated;
 }
-

@@ -2,8 +2,9 @@ package com.pawansingh.TradeNow.controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pawansingh.TradeNow.entities.Coin;
+import com.pawansingh.TradeNow.model.Coin;
 import com.pawansingh.TradeNow.services.CoinService;
+import com.pawansingh.TradeNow.services.CoinServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,13 +16,13 @@ import java.util.List;
 @RequestMapping("/coins")
 public class CoinController {
     @Autowired
-    private CoinService coinService;
+    private CoinServiceImpl coinService;
 
     @Autowired
     ObjectMapper objectMapper;
 
     @GetMapping
-    ResponseEntity<List<Coin>> getCoinList(@RequestParam("page") int page) throws Exception {
+    ResponseEntity<List<Coin>> getCoinList(@RequestParam(required = false, name = "page") int page) throws Exception {
         List<Coin> coins = coinService.getCoinList(page);
         return new ResponseEntity<>(coins, HttpStatus.ACCEPTED);
     }
@@ -47,9 +48,9 @@ public class CoinController {
         return new ResponseEntity<>(jsonNode, HttpStatus.OK);
     }
 
-    @GetMapping("/trading")
+    @GetMapping("/trending")
     ResponseEntity<JsonNode> getTradingCoin() throws Exception {
-        String res = coinService.getTradingCoins();
+        String res = coinService.getTrendingCoins();
         JsonNode jsonNode = objectMapper.readTree(res);
         return new ResponseEntity<>(jsonNode, HttpStatus.OK);
     }

@@ -33,4 +33,5 @@ build/
 .vscode/
 
 # my files to hide details of mine
+#src/main/resources/application.properties
 src/main/resources/application.properties

@@ -1,13 +1,14 @@
 package com.pawansingh.TradeNow.controllers;
 
 import com.pawansingh.TradeNow.config.JwtProvider;
-import com.pawansingh.TradeNow.entities.TwoFactorOTP;
-import com.pawansingh.TradeNow.entities.UserEntity;
+import com.pawansingh.TradeNow.model.TwoFactorOTP;
+import com.pawansingh.TradeNow.model.User;
 import com.pawansingh.TradeNow.repositories.UserRepository;
 import com.pawansingh.TradeNow.response.AuthResponse;
 import com.pawansingh.TradeNow.services.CustomUserDetailsService;
 import com.pawansingh.TradeNow.services.EmailService;
 import com.pawansingh.TradeNow.services.TwoFactorOTPService;
+import com.pawansingh.TradeNow.services.WatchlistService;
 import com.pawansingh.TradeNow.utils.OTPUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,24 +36,27 @@ public class AuthController {
     private TwoFactorOTPService twoFactorOTPService;
 
     @Autowired
+    private WatchlistService watchlistService;
+
+    @Autowired
     private EmailService emailService;
 
     @PostMapping("/signup")
-    public ResponseEntity<AuthResponse> register(@RequestBody UserEntity user) throws Exception{
+    public ResponseEntity<AuthResponse> register(@RequestBody User user) throws Exception{
 
-                UserEntity isEmailExist = userRepository.findUserByEmail(user.getEmail());
+                User isEmailExist = userRepository.findUserByEmail(user.getEmail());
 
                 if (isEmailExist!= null){
                     throw new Exception("User with this mail already Exist");
                 }
-                UserEntity newUser = new UserEntity();
+                User newUser = new User();
                 newUser.setFullName(user.getFullName());
                 newUser.setEmail(user.getEmail());
                 newUser.setPassword(user.getPassword());
                 newUser.setMobile(user.getMobile());
 
-//            UserEntity saved =
-                userRepository.save(newUser);
+            User savedUser = userRepository.save(newUser);
+                watchlistService.createWatchList(savedUser);
 
                 Authentication auth = new UsernamePasswordAuthenticationToken(
                         user.getEmail(),
@@ -75,7 +79,7 @@ public class AuthController {
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<AuthResponse> login(@RequestBody UserEntity user) throws Exception{
+    public ResponseEntity<AuthResponse> login(@RequestBody User user) throws Exception{
 
         String userName = user.getEmail();
         String password = user.getPassword();
@@ -84,7 +88,7 @@ public class AuthController {
 
         SecurityContextHolder.getContext().setAuthentication(auth);
         String jwt = JwtProvider.generateToken(auth);
-        UserEntity authUser = userRepository.findUserByEmail(userName);
+        User authUser = userRepository.findUserByEmail(userName);
 
         if(user.getTwoFactorAuth().isEnabled()){
             AuthResponse res = new AuthResponse();

@@ -1,9 +1,9 @@
 package com.pawansingh.TradeNow.controllers;
 
 import com.pawansingh.TradeNow.domain.VerificationType;
-import com.pawansingh.TradeNow.entities.ForgotPasswordToken;
-import com.pawansingh.TradeNow.entities.UserEntity;
-import com.pawansingh.TradeNow.entities.VerificationCode;
+import com.pawansingh.TradeNow.model.ForgotPasswordToken;
+import com.pawansingh.TradeNow.model.User;
+import com.pawansingh.TradeNow.model.VerificationCode;
 import com.pawansingh.TradeNow.request.ResetPasswordRequest;
 import com.pawansingh.TradeNow.response.ApiResponse;
 import com.pawansingh.TradeNow.response.AuthResponse;
@@ -36,8 +36,8 @@ public class UserController {
     private ForgotPasswordService forgotPasswordService;
 
     @GetMapping("/api/users/profile")
-    public ResponseEntity<UserEntity> getUserProfile(@RequestHeader("Authorization") String jwt) throws Exception {
-        UserEntity user = userService.findUserProfileByJwt(jwt);
+    public ResponseEntity<User> getUserProfile(@RequestHeader("Authorization") String jwt) throws Exception {
+        User user = userService.findUserProfileByJwt(jwt);
 
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
@@ -46,7 +46,7 @@ public class UserController {
     public ResponseEntity<String> sendVerificationOtp
             (@RequestHeader("Authorization") String jwt, @PathVariable VerificationType verificationType) throws Exception {
 
-        UserEntity user = userService.findUserProfileByJwt(jwt);
+        User user = userService.findUserProfileByJwt(jwt);
 
         VerificationCode verificationCode = verificationCodeService.getVerificationCodeByUser(user.getId());
         if (verificationType == null){
@@ -61,10 +61,10 @@ public class UserController {
     }
 
     @PatchMapping("/api/users/enable-two-factor/verify-otp/{otp}")
-    public ResponseEntity<UserEntity> enableTwoFactorAuthentication(
+    public ResponseEntity<User> enableTwoFactorAuthentication(
             @PathVariable String otp,
             @RequestHeader("Authorization") String jwt) throws Exception {
-        UserEntity user = userService.findUserProfileByJwt(jwt);
+        User user = userService.findUserProfileByJwt(jwt);
 
         VerificationCode verificationCode = verificationCodeService.getVerificationCodeByUser(user.getId());
         String sendTo = verificationCode.getVerificationType().equals(VerificationType.EMAIL)?
@@ -72,7 +72,7 @@ public class UserController {
 
         boolean isVerified = verificationCode.getOtp().equals(otp);
         if (isVerified){
-            UserEntity updatedUser = userService.enableTwoFactorAuthentication(verificationCode.getVerificationType(),sendTo,user);
+            User updatedUser = userService.enableTwoFactorAuthentication(verificationCode.getVerificationType(),sendTo,user);
             verificationCodeService.deleteVerificationCodeById(verificationCode);
             return new ResponseEntity<>(updatedUser,HttpStatus.OK);
         }
@@ -83,7 +83,7 @@ public class UserController {
     @PostMapping("/auth/users/reset-password/send-otp")
     public ResponseEntity<AuthResponse> sendForgotPasswordOtp(@RequestBody ForgotPasswordToken req) throws Exception {
 
-        UserEntity user = userService.findUserByEmail(req.getSendTo());
+        User user = userService.findUserByEmail(req.getSendTo());
         String otp = OTPUtils.generateOTP();
         UUID uuid = UUID.randomUUID();
         String id = uuid.toString();
@@ -114,7 +114,7 @@ public class UserController {
 
         boolean isVerified = forgotPasswordToken.getOtp().equals(req.getOtp());
         if (isVerified){
-            UserEntity updatedUser = userService.updatePassword(forgotPasswordToken.getUser(),req.getPassword());
+            User updatedUser = userService.updatePassword(forgotPasswordToken.getUser(),req.getPassword());
             ApiResponse res = new ApiResponse();
             res.setMessage("Password updated sucessfully");
             return new ResponseEntity<>(res,HttpStatus.OK);

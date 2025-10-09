@@ -1,4 +1,4 @@
-package com.pawansingh.TradeNow.entities;
+package com.pawansingh.TradeNow.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Entity;
@@ -15,7 +15,7 @@ public class TwoFactorOTP {
     private String otp;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @OneToOne
-    private UserEntity user;
+    private User user;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String jwt;
 }

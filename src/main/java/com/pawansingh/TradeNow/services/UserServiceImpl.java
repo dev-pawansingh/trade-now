@@ -2,8 +2,8 @@ package com.pawansingh.TradeNow.services;
 
 import com.pawansingh.TradeNow.config.JwtProvider;
 import com.pawansingh.TradeNow.domain.VerificationType;
-import com.pawansingh.TradeNow.entities.TwoFactorAuth;
-import com.pawansingh.TradeNow.entities.UserEntity;
+import com.pawansingh.TradeNow.model.TwoFactorAuth;
+import com.pawansingh.TradeNow.model.User;
 import com.pawansingh.TradeNow.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,9 +17,9 @@ public class UserServiceImpl implements UserService{
     private UserRepository userRepository;
 
     @Override
-    public UserEntity findUserProfileByJwt(String jwt) throws Exception {
+    public User findUserProfileByJwt(String jwt) throws Exception {
         String email = JwtProvider.getEmailFromToken(jwt);
-        UserEntity user = userRepository.findUserByEmail(email);
+        User user = userRepository.findUserByEmail(email);
         if(user == null){
             throw new Exception("User not found");
         }
@@ -27,8 +27,8 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public UserEntity findUserByEmail(String email) throws Exception {
-        UserEntity user = userRepository.findUserByEmail(email);
+    public User findUserByEmail(String email) throws Exception {
+        User user = userRepository.findUserByEmail(email);
         if(user == null){
             throw new Exception("User not found");
         }
@@ -36,8 +36,8 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public UserEntity findUserById(Long userId) throws Exception {
-        Optional<UserEntity> user = userRepository.findById(userId);
+    public User findUserById(Long userId) throws Exception {
+        Optional<User> user = userRepository.findById(userId);
         if(user == null){
             throw new Exception("User not found");
         }
@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public UserEntity enableTwoFactorAuthentication(VerificationType verificationType, String sendTo, UserEntity user) {
+    public User enableTwoFactorAuthentication(VerificationType verificationType, String sendTo, User user) {
 
         TwoFactorAuth twoFactorAuth = new TwoFactorAuth();
         twoFactorAuth.setEnabled(true);
@@ -57,7 +57,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public UserEntity updatePassword(UserEntity user, String newPass) {
+    public User updatePassword(User user, String newPass) {
         user.setPassword(newPass);
         return userRepository.save(user);
     }

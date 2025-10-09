@@ -1,4 +1,4 @@
-package com.pawansingh.TradeNow.entities;
+package com.pawansingh.TradeNow.model;
 
 import com.pawansingh.TradeNow.domain.VerificationType;
 import jakarta.persistence.*;
@@ -6,15 +6,14 @@ import lombok.Data;
 
 @Entity
 @Data
-public class ForgotPasswordToken {
+public class VerificationCode {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private String id;
-
-    @OneToOne
-    private UserEntity user;
-
+    private long id;
     private String otp;
+    @OneToOne
+    private User user;
+    private String email;
+    private String mobile;
     private VerificationType verificationType;
-    private String sendTo;
 }
